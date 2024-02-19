@@ -4,7 +4,7 @@ import pandas as pd
 from io import BytesIO
 
 # Initialize the OpenAI client securely
-openai.api_key = "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"
+openai.api_key = st.secrets["api_key"]
 
 # Define the Streamlit app layout
 st.title('VC Outreach Email Personalization Tool')
