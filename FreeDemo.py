@@ -9,6 +9,10 @@ openai.api_key = st.secrets["api_key"]
 # Define the Streamlit app layout
 st.title('VC Outreach Email Personalization Tool')
 
+# Input fields for customizing the AI prompt
+custom_role = st.text_input("Custom Role Description", value="VC analyst")
+custom_instruction = st.text_input("Custom Instruction", value="In 30 words, describe the synergy between COMPANY_NAME's work on COMPANY_DESCRIPTION and our VC's focus on VC_DESCRIPTION, excluding subject, greeting, or signature.")
+
 # Initialize session state for storing the DataFrame if it doesn't exist
 if 'personalized_df' not in st.session_state:
     st.session_state.personalized_df = pd.DataFrame(columns=['Company Name', 'Personalized Section'])
@@ -29,10 +33,13 @@ def read_vc_description(vc_file):
 vc_description = read_vc_description(vc_description_file) if vc_description_file else ""
 
 # Function to use the OpenAI ChatCompletion API for generating personalized sections
-def generate_personalized_section(company_name, company_description, vc_description):
+def generate_personalized_section(company_name, company_description, vc_description, custom_role, custom_instruction):
+    # Replace placeholders in custom_instruction with actual values
+    instruction = custom_instruction.replace("COMPANY_NAME", company_name).replace("COMPANY_DESCRIPTION", company_description).replace("VC_DESCRIPTION", vc_description)
+    
     conversation = [
-        {"role": "system", "content": "You are a VC analyst at {vc_description}"},
-        {"role": "user", "content": f"In 30 words, describe the synergy between {company_name}'s work on {company_description} and our VC's focus on {vc_description}, excluding subject, greeting, or signature."}
+        {"role": "system", "content": f"You are a {custom_role} at {{vc_description}}"},
+        {"role": "user", "content": instruction}
     ]
     
     response = openai.ChatCompletion.create(
@@ -47,12 +54,12 @@ def description_exceeds_limit(description, limit=250):
     return len(description.split()) > limit
 
 # Function to process uploaded files and generate personalized emails
-def process_and_generate_emails(company_df, vc_desc):
+def process_and_generate_emails(company_df, vc_desc, custom_role, custom_instruction):
     if company_df.shape[0] > 20:
         st.error("The CSV file contains more than 20 rows. Please limit your input to 20 companies or contact jadrima1@gmail.com for assistance.")
         return
     
-    data_list = []  # Collect data in a list to avoid inefficient DataFrame.append()
+    data_list = []
 
     if not company_df.empty and vc_desc:
         for _, row in company_df.iterrows():
@@ -60,10 +67,10 @@ def process_and_generate_emails(company_df, vc_desc):
             description = row['Description']
             
             if description_exceeds_limit(description):
-                st.error(f"The description for {company_name} exceeds 250 words. Please reduce the length or contact jadrima1@gmail.com for assistance.")
-                continue  # Skip processing this row
+                st.error(f"The description for {company_name} exceeds 250 words. Please reduce the length.")
+                continue
             
-            personalized_section = generate_personalized_section(company_name, description, vc_desc)
+            personalized_section = generate_personalized_section(company_name, description, vc_desc, custom_role, custom_instruction)
             data_list.append({'Company Name': company_name, 'Personalized Section': personalized_section})
 
     # Convert list to DataFrame and update session_state
@@ -72,11 +79,8 @@ def process_and_generate_emails(company_df, vc_desc):
 # Main logic to generate and display emails, and prepare Excel download
 if company_file is not None:
     df = pd.read_csv(company_file) if company_file.type == "text/csv" else pd.read_excel(company_file)
-    if df.shape[0] > 20:
-        st.error("The CSV file contains more than 20 rows. Please limit your input to 20 companies or contact jadrima1@gmail.com for assistance.")
-    else:
-        process_and_generate_emails(df.iloc[:20], vc_description)  # Limit processing to the first 20 rows
-        st.write(st.session_state.personalized_df)
+    process_and_generate_emails(df, vc_description, custom_role, custom_instruction)
+    st.write(st.session_state.personalized_df)
 
 # Function to convert DataFrame to Excel for download
 def convert_df_to_excel():
