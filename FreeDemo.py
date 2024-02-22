@@ -21,7 +21,7 @@ if 'personalized_df' not in st.session_state:
 company_file = st.file_uploader("Upload Company Descriptions File (CSV or Excel)", type=['csv', 'xlsx'])
 
 # File upload for the VC description
-vc_description_file = st.file_uploader("Upload VC Description File (Text)", type=['txt'])
+vc_description_file = st.file_uploader("Upload Company Description File (Text)", type=['txt'])
 
 # Function to read VC description file
 def read_vc_description(vc_file):
