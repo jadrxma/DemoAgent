@@ -18,7 +18,7 @@ if 'personalized_df' not in st.session_state:
     st.session_state.personalized_df = pd.DataFrame(columns=['Company Name', 'Personalized Section'])
 
 # File upload for the company descriptions
-company_file = st.file_uploader("Upload Company Descriptions File (CSV or Excel)", type=['csv', 'xlsx'])
+company_file = st.file_uploader("Upload Leads File (CSV or Excel)", type=['csv', 'xlsx'])
 
 # File upload for the VC description
 vc_description_file = st.file_uploader("Upload Company Description File (Text)", type=['txt'])
