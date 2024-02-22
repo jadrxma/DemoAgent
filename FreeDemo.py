@@ -10,7 +10,7 @@ openai.api_key = st.secrets["api_key"]
 st.title('VC Outreach Email Personalization Tool')
 
 # Input fields for customizing the AI prompt
-custom_role = st.text_input("Custom Role Description", value="VC analyst")
+custom_role = st.text_input("Your Role", value="VC analyst")
 
 # Initialize session state for storing the DataFrame if it doesn't exist
 if 'personalized_df' not in st.session_state:
