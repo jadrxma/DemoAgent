@@ -11,7 +11,7 @@ st.title('VC Outreach Email Personalization Tool')
 
 # Input fields for customizing the AI prompt
 custom_role = st.text_input("Custom Role Description", value="VC analyst")
-custom_instruction = st.text_input("Custom Instruction", value="In 30 words, describe the synergy between COMPANY_NAME's work on COMPANY_DESCRIPTION and our VC's focus on VC_DESCRIPTION, excluding subject, greeting, or signature.")
+custom_instruction = st.text_input("What would you like the email to be? *don't remove COMPANY_NAME and COMPANY_DESCRIPTION from intstruction", value="In 30 words, describe the synergy between COMPANY_NAME's work on COMPANY_DESCRIPTION and our VC's focus on VC_DESCRIPTION, excluding subject, greeting, or signature.")
 
 # Initialize session state for storing the DataFrame if it doesn't exist
 if 'personalized_df' not in st.session_state:
