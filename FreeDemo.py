@@ -37,8 +37,6 @@ def generate_personalized_section(company_name, company_description, vc_descript
     instruction = "In 30 words, describe the synergy between {company_name}'s work on {company_description} and our VC's focus on {vc_description}, excluding subject, greeting, or signature."
     
     conversation = [
-        {"role": "system", "content": f"You are a {custom_role_description}"},    
-    conversation = [
         {"role": "system", "content": f"You are a {custom_role} at {{vc_description}}"},
         {"role": "user", "content": instruction}
     ]
