@@ -11,7 +11,6 @@ st.title('VC Outreach Email Personalization Tool')
 
 # Input fields for customizing the AI prompt
 custom_role = st.text_input("Custom Role Description", value="VC analyst")
-custom_instruction = st.text_input("What would you like the email to be? *don't remove COMPANY_NAME and COMPANY_DESCRIPTION from intstruction", value="In 30 words, describe the synergy between COMPANY_NAME's work on COMPANY_DESCRIPTION and our VC's focus on VC_DESCRIPTION, excluding subject, greeting, or signature.")
 
 # Initialize session state for storing the DataFrame if it doesn't exist
 if 'personalized_df' not in st.session_state:
@@ -35,8 +34,10 @@ vc_description = read_vc_description(vc_description_file) if vc_description_file
 # Function to use the OpenAI ChatCompletion API for generating personalized sections
 def generate_personalized_section(company_name, company_description, vc_description, custom_role, custom_instruction):
     # Replace placeholders in custom_instruction with actual values
-    instruction = custom_instruction.replace("COMPANY_NAME", company_name).replace("COMPANY_DESCRIPTION", company_description).replace("VC_DESCRIPTION", vc_description)
+    instruction = "In 30 words, describe the synergy between {company_name}'s work on {company_description} and our VC's focus on {vc_description}, excluding subject, greeting, or signature."
     
+    conversation = [
+        {"role": "system", "content": f"You are a {custom_role_description}"},    
     conversation = [
         {"role": "system", "content": f"You are a {custom_role} at {{vc_description}}"},
         {"role": "user", "content": instruction}
